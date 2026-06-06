@@ -4,29 +4,60 @@
 
 using namespace std;
 
-void przesuwanie(char t[10][10])
+bool mozna_ruch(char t[10][10], string skad, string dokad, string kogo)
 {
-    string skad, dokad;
-
+    //dokonczyc
+}
+void przesuwanie(char t[10][10], string skad, string dokad)
+  {
+    /*
     cout << endl << "Podaj pole, na ktorym stoi pion (np. A3): ";
     cin >> skad;
     cout << "Podaj pole docelowe (np. B4): ";
     cin >> dokad;
-
+    */
     int k1, w1, k2, w2;
 
     if(skad[0] >= 'A' && skad[0] <= 'J')
+    {
         k1 = skad[0]-'A';
+    }
     else
+    {
         k1 = skad[0]-'a';
-
+    }
     if(dokad[0] >= 'A' && dokad[0] <= 'J')
+    {
         k2 = dokad[0]-'A';
+    }
     else
+    {
         k2 = dokad[0]-'a';
-
-    w1 = stoi(skad.substr(1)) - 1;
-    w2 = stoi(dokad.substr(1)) - 1;
+    }
+    if(skad.length() == 3)
+    {
+        w1 = 9;
+    }
+    else
+    {
+        w1 = skad[1] - '0' - 1;
+    }
+    if(dokad.length() == 3)
+    {
+        w2 = 9;
+    }
+    else
+    {
+        w2 = dokad[1] - '0' - 1;
+    }
+    if(t[w1][k1] == 'b' && w2 == 9)
+    {
+        t[w2][k2] = 'd';
+    }
+    else if(t[w1][k1] == 'c' && w2 == 0)
+    {
+        t[w2][k2] = 'k';
+    }
     t[w2][k2] = t[w1][k1];
     t[w1][k1] = '0';
 
@@ -86,6 +117,7 @@ void pokaz_plansze(char t[10][10])
 }
 int main()
 {
+    string ruch = "bialych";
     czysc();
     int ile_bialych = 40;
     int ile_czarnych = 40;
@@ -134,8 +166,13 @@ int main()
         cout << "\n";
     }
     */
+    string z, na;
     pokaz_plansze(piony);
-    przesuwanie(piony);
+    cout << endl << "Podaj pole, na ktorym stoi pion (np. A3): ";
+    cin >> z;
+    cout << "Podaj pole docelowe (np. B4): ";
+    cin >> na;
+    przesuwanie(piony, z, na);
     czysc();
     pokaz_plansze(piony);
 
