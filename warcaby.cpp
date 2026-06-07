@@ -4,11 +4,89 @@
 
 using namespace std;
 
-bool mozna_ruch(char t[10][10], string skad, string dokad, string kogo)
+bool mozna_ruch(char t[10][10], string skad, string dokad, string kogo) //zle
 {
-    //dokonczyc
+    int k1, w1, k2, w2;
+
+    if(skad[0] >= 'A' && skad[0] <= 'J')
+        k1 = skad[0] - 'A';
+    else if(skad[0] >= 'a' && skad[0] <= 'j')
+        k1 = skad[0] - 'a';
+    else
+        return false;
+
+    if(dokad[0] >= 'A' && dokad[0] <= 'J')
+        k2 = dokad[0] - 'A';
+    else if(skad[0] >= 'a' && skad[0] <= 'j')
+        k2 = dokad[0] - 'a';
+    else
+        return false;
+
+    if(skad.length() == 3 && skad[1] == "1" && skad[2] == "0")
+    {
+        w1 = 9;
+    }
+    else if(skad.length() == 2)
+    {
+        w1 = skad[1] - '1';
+    }
+    else
+    {
+        return false;
+    }
+    if(dokad.length() == 3 && dokad[1] == "1" && dokad[2] == "0")
+    {
+        w2 = 9;
+    }
+    else if(dokad.length() == 2)
+    {
+        w2 = dokad[1] - '1';
+    }
+    else
+    {
+        return false;
+    }
+    if(w1 < 0 || w1 > 9 || w2 < 0 || w2 > 9 || k1 < 0 || k1 > 9 || k2 < 0 || k2 > 9)
+        return false;
+
+    char pion = t[w1][k1];
+
+    if(pion == '0')
+        return false;
+    if(t[w2][k2] != '0')
+        return false;
+    if(kogo == "bialych" && pion != 'b' && pion != 'd')
+        return false;
+    if(kogo == "czarnych" && pion != 'c' && pion != 'k')
+        return false;
+//w dol poprawic
+    int rw = w2 - w1;
+    int rk = abs(k2 - k1);
+
+    // bia³y pion
+    if(pion == 'b')
+    {
+        if(dw == 1 && dk == 1)
+            return true;
+    }
+
+    // czarny pion
+    if(pion == 'c')
+    {
+        if(dw == -1 && dk == 1)
+            return true;
+    }
+
+    // damy
+    if(pion == 'd' || pion == 'k')
+    {
+        if(abs(dw) == 1 && dk == 1)
+            return true;
+    }
+
+    return false;
 }
-void przesuwanie(char t[10][10], string skad, string dokad)
+void przesuwanie(char t[10][10], string skad, string dokad) //inne ruchy?
   {
     /*
     cout << endl << "Podaj pole, na ktorym stoi pion (np. A3): ";
@@ -62,7 +140,7 @@ void przesuwanie(char t[10][10], string skad, string dokad)
     t[w1][k1] = '0';
 
 }
-void czysc()
+void czysc() //dorobic
 {
     system("cls");
     cout << "||||||||||||||||||||||||||||||||\n";
