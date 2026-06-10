@@ -22,7 +22,7 @@ bool mozna_ruch(char t[10][10], string skad, string dokad, string kogo) //zle
     else
         return false;
 
-    if(skad.length() == 3 && skad[1] == "1" && skad[2] == "0")
+    if(skad.length() == 3 && skad[1] == '1' && skad[2] == '0')
     {
         w1 = 9;
     }
@@ -34,7 +34,7 @@ bool mozna_ruch(char t[10][10], string skad, string dokad, string kogo) //zle
     {
         return false;
     }
-    if(dokad.length() == 3 && dokad[1] == "1" && dokad[2] == "0")
+    if(dokad.length() == 3 && dokad[1] == '1' && dokad[2] == '0')
     {
         w2 = 9;
     }
@@ -63,24 +63,24 @@ bool mozna_ruch(char t[10][10], string skad, string dokad, string kogo) //zle
     int rw = w2 - w1;
     int rk = abs(k2 - k1);
 
-    // bia�y pion
+    // bia³y pion
     if(pion == 'b')
     {
-        if(dw == 1 && dk == 1)
+        if(rw == 1 && rk == 1)
             return true;
     }
 
     // czarny pion
     if(pion == 'c')
     {
-        if(dw == -1 && dk == 1)
+        if(rw == -1 && rk == 1)
             return true;
     }
 
     // damy
     if(pion == 'd' || pion == 'k')
     {
-        if(abs(dw) == 1 && dk == 1)
+        if(abs(rw) == 1 && rk == 1)
             return true;
     }
 
@@ -143,10 +143,10 @@ void przesuwanie(char t[10][10], string skad, string dokad) //inne ruchy?
 void czysc() //dorobic
 {
     system("cls");
-    cout << "||||||||||||||||||||||||||||||||\n";
-    cout << "|| << WITAJ W GRZE WARCABY >> ||\n";
-    cout << "|| [ Autor: Mateusz Antczak ] ||\n";
-    cout << "||||||||||||||||||||||||||||||||\n";
+    cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||";
+    cout << "|| << WITAJ W GRZE WARCABY >> |||| << POWODZENIA (chyba, że jesteś Adamem) >> ||";
+    cout << "|| [ Autor: Mateusz Antczak ] ||||             << RUCH " << kogo << " >>             ||";
+    cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||";
 }
 void pokaz_plansze(char t[10][10])
 {
@@ -195,7 +195,7 @@ void pokaz_plansze(char t[10][10])
 }
 int main()
 {
-    string ruch = "bialych";
+    string ruch = "BIAŁYCH";
     czysc();
     int ile_bialych = 40;
     int ile_czarnych = 40;
