@@ -1,153 +1,135 @@
-//MATEUSZ ANTCZAK KL. 1D
+//MATEUSZ ANTCZAK KL. 1D (2D)
+
 
 #include <bits/stdc++.h>
 
 using namespace std;
-
-bool mozna_ruch(char t[10][10], string skad, string dokad, string kogo) //zle
+bool parsuj_pole(string s, int &w, int &k)
 {
-    int k1, w1, k2, w2;
-
-    if(skad[0] >= 'A' && skad[0] <= 'J')
-        k1 = skad[0] - 'A';
-    else if(skad[0] >= 'a' && skad[0] <= 'j')
-        k1 = skad[0] - 'a';
-    else
+    if(s.size() < 2 || s.size() > 3)
         return false;
 
-    if(dokad[0] >= 'A' && dokad[0] <= 'J')
-        k2 = dokad[0] - 'A';
-    else if(skad[0] >= 'a' && skad[0] <= 'j')
-        k2 = dokad[0] - 'a';
-    else
+    char kol = toupper(s[0]);
+    if(kol < 'A' || kol > 'J')
         return false;
 
-    if(skad.length() == 3 && skad[1] == '1' && skad[2] == '0')
-    {
-        w1 = 9;
-    }
-    else if(skad.length() == 2)
-    {
-        w1 = skad[1] - '1';
-    }
-    else
-    {
+    k = kol - 'A';
+
+    string czesc_wiersza = s.substr(1);
+    for(char znak : czesc_wiersza)
+        if(!isdigit((unsigned char)znak))
+            return false;
+
+    int numer = stoi(czesc_wiersza);
+    if(numer < 1 || numer > 10)
         return false;
-    }
-    if(dokad.length() == 3 && dokad[1] == '1' && dokad[2] == '0')
-    {
-        w2 = 9;
-    }
-    else if(dokad.length() == 2)
-    {
-        w2 = dokad[1] - '1';
-    }
-    else
-    {
-        return false;
-    }
-    if(w1 < 0 || w1 > 9 || w2 < 0 || w2 > 9 || k1 < 0 || k1 > 9 || k2 < 0 || k2 > 9)
-        return false;
+
+    w = numer - 1;
+    return true;
+}
+
+int typ_ruchu(char t[10][10], string skad, string dokad, string kogo,
+              int &w1, int &k1, int &w2, int &k2)
+{
+    if(!(parsuj_pole(skad, w1, k1))) return 0;
+    if(!(parsuj_pole(dokad, w2, k2))) return 0;
 
     char pion = t[w1][k1];
-
     if(pion == '0')
-        return false;
+        return 0;
     if(t[w2][k2] != '0')
-        return false;
+        return 0;
     if(kogo == "bialych" && pion != 'b' && pion != 'd')
-        return false;
+        return 0;
     if(kogo == "czarnych" && pion != 'c' && pion != 'k')
-        return false;
-//w dol poprawic
+        return 0;
+
     int rw = w2 - w1;
-    int rk = abs(k2 - k1);
+    int rk = k2 - k1;
+    int wb_rw = abs(rw);
+    int wb_rk = abs(rk);
 
-    // bia³y pion
-    if(pion == 'b')
+    if(wb_rw != wb_rk || wb_rw == 0)
+        return 0;
+
+    bool dama = (pion == 'd' || pion == 'k');
+
+    if(wb_rw == 1)
     {
-        if(rw == 1 && rk == 1)
-            return true;
+        if(pion == 'b' && rw == 1) return 1;
+        if(pion == 'c' && rw == -1) return 1;
+        if(dama) return 1;
+        return 0;
     }
 
-    // czarny pion
-    if(pion == 'c')
+    if(wb_rw == 2)
     {
-        if(rw == -1 && rk == 1)
-            return true;
+        if(kogo == "bialych" && rw != 2) return 0;
+        if(kogo == "czarnych" && rw != -2) return 0;
+
+        int wm = (w1 + w2) / 2;
+        int km = (k1 + k2) / 2;
+        char srodek = t[wm][km];
+
+        bool wrogi = false;
+        if(kogo == "bialych" && (srodek == 'c' || srodek == 'k')) wrogi = true;
+        if(kogo == "czarnych" && (srodek == 'b' || srodek == 'd')) wrogi = true;
+        if(!(wrogi)) return 0;
+
+        return 2;
     }
 
-    // damy
-    if(pion == 'd' || pion == 'k')
-    {
-        if(abs(rw) == 1 && rk == 1)
-            return true;
-    }
-
-    return false;
+    return 0;
 }
-void przesuwanie(char t[10][10], string skad, string dokad) //inne ruchy?
-  {
-    /*
-    cout << endl << "Podaj pole, na ktorym stoi pion (np. A3): ";
-    cin >> skad;
-    cout << "Podaj pole docelowe (np. B4): ";
-    cin >> dokad;
-    */
-    int k1, w1, k2, w2;
 
-    if(skad[0] >= 'A' && skad[0] <= 'J')
-    {
-        k1 = skad[0]-'A';
-    }
-    else
-    {
-        k1 = skad[0]-'a';
-    }
-    if(dokad[0] >= 'A' && dokad[0] <= 'J')
-    {
-        k2 = dokad[0]-'A';
-    }
-    else
-    {
-        k2 = dokad[0]-'a';
-    }
-    if(skad.length() == 3)
-    {
-        w1 = 9;
-    }
-    else
-    {
-        w1 = skad[1] - '0' - 1;
-    }
-    if(dokad.length() == 3)
-    {
-        w2 = 9;
-    }
-    else
-    {
-        w2 = dokad[1] - '0' - 1;
-    }
-    if(t[w1][k1] == 'b' && w2 == 9)
-    {
-        t[w2][k2] = 'd';
-    }
-    else if(t[w1][k1] == 'c' && w2 == 0)
-    {
-        t[w2][k2] = 'k';
-    }
-    t[w2][k2] = t[w1][k1];
+)
+
+void przesuwanie(char t[10][10], int w1, int k1, int w2, int k2)
+{
+    char pion = t[w1][k1];
     t[w1][k1] = '0';
+    t[w2][k2] = pion;
 
+    if(pion == 'b' && w2 == 9) t[w2][k2] = 'd';
+    if(pion == 'c' && w2 == 0) t[w2][k2] = 'k';
 }
-void czysc() //dorobic
+
+
+void wykonaj_bicie(char t[10][10], int w1, int k1, int w2, int k2,
+                    int &ile_bialych, int &ile_czarnych)
+{
+    int wm = (w1 + w2) / 2;
+    int km = (k1 + k2) / 2;
+    char zbity = t[wm][km];
+
+    if(zbity == 'b' || zbity == 'd') ile_bialych--;
+    if(zbity == 'c' || zbity == 'k') ile_czarnych--;
+
+    t[wm][km] = '0';
+
+    char pion = t[w1][k1];
+    t[w1][k1] = '0';
+    t[w2][k2] = pion;
+
+    if(pion == 'b' && w2 == 9) t[w2][k2] = 'd';
+    if(pion == 'c' && w2 == 0) t[w2][k2] = 'k';
+}
+
+void czysc(string kogo)
 {
     system("cls");
-    cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||";
-    cout << "|| << WITAJ W GRZE WARCABY >> |||| << POWODZENIA (chyba, że jesteś Adamem) >> ||";
-    cout << "|| [ Autor: Mateusz Antczak ] ||||             << RUCH " << kogo << " >>             ||";
-    cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||";
+    string kogo_x; = (kogo == "bialych") ? "BIALYCH " : "CZARNYCH";
+    if(kogo == "bialych")
+    {
+        kogo_x = "BIALYCH";
+    }
+    else{kogo_x="CZARNYCH";}
+    cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
+    cout << "|| << WITAJ W GRZE WARCABY >> |||| << POWODZENIA (chyba, ze jestes Adamem) >> ||\n";
+    cout << "|| [ Autor: Mateusz Antczak ] ||||             << RUCH " << kogo_disp << " >>             ||\n";
+    cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
 }
+
 void pokaz_plansze(char t[10][10])
 {
   cout << "       A     B      C      D      E      F      G      H      I      J \n";
@@ -193,10 +175,9 @@ void pokaz_plansze(char t[10][10])
   cout << "   |";if(t[0][0] == 'c' || t[0][0] == 'k'){cout << " @@@@ ";}if(t[0][0] == 'b' || t[0][0] == 'd') {cout << " 0000 ";}if(t[0][0] == '0'){cout << "******";}cout << "|      |";if(t[0][2] == 'c' || t[0][2] == 'k') {cout << " @@@@ ";}if(t[0][2] == 'b' || t[0][2] == 'd') {cout << " 0000 ";}if(t[0][2] == '0'){cout << "******";}cout << "|      |";if(t[0][4] == 'c' || t[0][4] == 'k') {cout << " @@@@ ";}if(t[0][4] == 'b' || t[0][4] == 'd') {cout << " 0000 ";}if(t[0][4] == '0'){cout << "******";}cout << "|      |";if(t[0][6] == 'c' || t[0][6] == 'k') {cout << " @@@@ ";}if(t[0][6] == 'b' || t[0][6] == 'd') {cout << " 0000 ";}if(t[0][6] == '0'){cout << "******";}cout << "|      |";if(t[0][8] == 'c' || t[0][8] == 'k') {cout << " @@@@ ";}if(t[0][8] == 'b' || t[0][8] == 'd') {cout << " 0000 ";}if(t[0][8] == '0'){cout << "******";}cout << "|      |\n";
   cout << "   -----------------------------------------------------------------------\n";
 }
+
 int main()
 {
-    string ruch = "BIAŁYCH";
-    czysc();
     int ile_bialych = 40;
     int ile_czarnych = 40;
     char piony[10][10];
@@ -206,53 +187,40 @@ int main()
     //b - bialy pion
     //d - biala dama
     for(int w = 0; w < 10; w++)
-    {
         for(int k = 0; k < 10; k++)
-        {
             piony[w][k] = '0';
-        }
-    }
+
     for(int w = 0; w < 4; w++)
-    {
         for(int k = w; k < (10+w); k++)
-        {
             if(!(k%2))
-            {
                 piony[w][k-w] = 'b';
-            }
-        }
-    }
+
     for(int w = 6; w < 10; w++)
-    {
         for(int k = w; k < (10+w); k++)
-        {
             if(!(k%2))
-            {
                 piony[w][k-w] = 'c';
-            }
-        }
-    }
 
-
-    /*cout << "\n";
-    for(int w  = 0; w < 10; w++)
-    {
-        for(int k = 0; k < 10; k++)
-        {
-            cout << piony[w][k] << " ";
-        }
-        cout << "\n";
-    }
-    */
+    string kogo = "bialych";
     string z, na;
-    pokaz_plansze(piony);
-    cout << endl << "Podaj pole, na ktorym stoi pion (np. A3): ";
-    cin >> z;
-    cout << "Podaj pole docelowe (np. B4): ";
-    cin >> na;
-    przesuwanie(piony, z, na);
-    czysc();
-    pokaz_plansze(piony);
 
-    //czysc();
+    while(true)
+    {
+        if(ile_bialych == 0)
+        {
+            czysc(kogo);
+            pokaz_plansze(piony);
+            cout << "\nCZARNI WYGRYWAJA!\n";
+            break;
+        }
+        if(ile_czarnych == 0)
+        {
+            czysc(kogo);
+            pokaz_plansze(piony);
+            cout << "\nBIALI WYGRYWAJA!\n";
+            break;
+        }
+
+
+
+    return 0;
 }
