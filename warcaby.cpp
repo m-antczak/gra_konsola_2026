@@ -1,9 +1,9 @@
 //MATEUSZ ANTCZAK KL. 1D (2D)
 
-
 #include <bits/stdc++.h>
 
 using namespace std;
+
 bool parsuj_pole(string s, int &w, int &k)
 {
     if(s.size() < 2 || s.size() > 3)
@@ -82,7 +82,7 @@ int typ_ruchu(char t[10][10], string skad, string dokad, string kogo,
     return 0;
 }
 
-)
+
 
 void przesuwanie(char t[10][10], int w1, int k1, int w2, int k2)
 {
@@ -114,19 +114,55 @@ void wykonaj_bicie(char t[10][10], int w1, int k1, int w2, int k2,
     if(pion == 'b' && w2 == 9) t[w2][k2] = 'd';
     if(pion == 'c' && w2 == 0) t[w2][k2] = 'k';
 }
+bool czy_bicie(char t[10][10], string kogo)
+{
+    int k_przod;
+    if(kogo=="bialych")
+    {k_przod = 1;}
+        else{k_przod = -1;}
+    int dc[2] = {1, -1};
+
+    for(int w = 0; w < 10; w++)
+        for(int k = 0; k < 10; k++)
+        {
+            char pion = t[w][k];
+            bool wlasny = (kogo == "bialych" && (pion == 'b' || pion == 'd')) ||
+                          (kogo == "czarnych" && (pion == 'c' || pion == 'k'));
+            if(!wlasny)
+                continue;
+
+            for(int i = 0; i < 2; i++)
+            {
+                int wm = w + k_przod;
+                int km = k + dc[i];
+                int w2 = w + 2*k_przod;
+                int k2 = k + 2*dc[i];
+                if(w2 < 0 || w2 > 9 || k2 < 0 || k2 > 9) continue;
+
+                char srodek = t[wm][km];
+                bool wrogi = false;
+                if(kogo == "bialych" && (srodek == 'c' || srodek == 'k')) wrogi = true;
+                if(kogo == "czarnych" && (srodek == 'b' || srodek == 'd')) wrogi = true;
+
+                if(wrogi && t[w2][k2] == '0')
+                    return true;
+            }
+        }
+    return false;
+}
 
 void czysc(string kogo)
 {
     system("cls");
-    string kogo_x; = (kogo == "bialych") ? "BIALYCH " : "CZARNYCH";
+    string kogo_x;
     if(kogo == "bialych")
     {
-        kogo_x = "BIALYCH";
+        kogo_x = "BIALYCH (0) ";
     }
-    else{kogo_x="CZARNYCH";}
+    else{kogo_x="CZARNYCH (@)";}
     cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
     cout << "|| << WITAJ W GRZE WARCABY >> |||| << POWODZENIA (chyba, ze jestes Adamem) >> ||\n";
-    cout << "|| [ Autor: Mateusz Antczak ] ||||             << RUCH " << kogo_disp << " >>             ||\n";
+    cout << "|| [ Autor: Mateusz Antczak ] ||||             << RUCH " << kogo_x << " >>        ||\n";
     cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
 }
 
@@ -220,7 +256,57 @@ int main()
             break;
         }
 
+    bool bicie_dostepne = czy_bicie(piony, kogo);
+
+        czysc(kogo);
+        pokaz_plansze(piony);
+        if(bicie_dostepne)
+            cout << "\n>> Masz dostepne bicie i jest ono OBOWIAZKOWE <<\n";
+
+        cout << endl << "Podaj pole, na ktorym stoi Twoj pion (np. A3):";
+        cin >> z;
+
+        cout << "Podaj pole docelowe (np. F4): ";
+        cin >> na;
+
+        int w1, k1, w2, k2;
+        int typ = typ_ruchu(piony, z, na, kogo, w1, k1, w2, k2);
+
+        if(typ == 0)
+        {
+            cout << "NIEPOPRAWNY RUCH! Wykonaj ruch ponownie. Aby kontynuowac nacisnij dowolny klawisz";
+            cin.ignore();
+            cin.get();
+            continue;
+        }
+        if(bicie_dostepne && typ != 2)
+        {
+            cout << "Musisz wykonac bicie! Aby kontynuowac nacisnij dowolny klawisz.";
+            cin.ignore();
+            cin.get();
+            continue;
+        }
+
+        if(typ == 1)
+        {
+            przesuwanie(piony, w1, k1, w2, k2);
+        }
+        else
+        {
+            wykonaj_bicie(piony, w1, k1, w2, k2, ile_bialych, ile_czarnych);
+        }
+        if(kogo == "bialych")
+        {
+            kogo = "czarnych";
+        }
+        else
+        {
+            kogo = "bialych";
+        }
+    }
 
 
     return 0;
-}
+    }
+
+
