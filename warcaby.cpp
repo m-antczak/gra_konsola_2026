@@ -81,7 +81,27 @@ int typ_ruchu(char t[10][10], string skad, string dokad, string kogo,
 
     return 0;
 }
+bool czy_ruch_mozliwy(char t[10][10], string kogo)
+{
+    int w1, k1, w2, k2;
+    for(int w = 0; w < 10; w++)
+        for(int k = 0; k < 10; k++)
+            for(int dw = -2; dw <= 2; dw++)
+                for(int dk = -2; dk <= 2; dk++)
+                {
+                    if(abs(dw) != abs(dk) || dw == 0) continue;
+                    int w_cel = w + dw;
+                    int k_cel = k + dk;
+                    if(w_cel < 0 || w_cel > 9 || k_cel < 0 || k_cel > 9) continue;
 
+                    string skad = string(1, char('A' + k)) + to_string(w + 1);
+                    string dokad = string(1, char('A' + k_cel)) + to_string(w_cel + 1);
+
+                    if(typ_ruchu(t, skad, dokad, kogo, w1, k1, w2, k2) != 0)
+                        return true;
+                }
+    return false;
+}
 
 
 void przesuwanie(char t[10][10], int w1, int k1, int w2, int k2)
@@ -160,12 +180,29 @@ void czysc(string kogo)
         kogo_x = "BIALYCH (0) ";
     }
     else{kogo_x="CZARNYCH (@)";}
-    cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
-    cout << "|| << WITAJ W GRZE WARCABY >> |||| << POWODZENIA (chyba, ze jestes Adamem) >> ||\n";
-    cout << "|| [ Autor: Mateusz Antczak ] ||||             << RUCH " << kogo_x << " >>        ||\n";
-    cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
+    cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
+    cout << "|| << WITAJ W GRZE WARCABY >> ||||    << POWODZENIA >>    ||\n";
+    cout << "|| [ Autor: Mateusz Antczak ] ||||   << RUCH " << kogo_x << " ||\n";
+    cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
 }
-
+void zasady()
+{
+    system("cls");
+    cout << "||||||||||||||||||||||||||||||||\n";
+    cout << "|| << WITAJ W GRZE WARCABY >> ||\n";
+    cout << "|| [ Autor: Mateusz Antczak ] ||\n";
+    cout << "||||||||||||||||||||||||||||||||\n";
+    cout << "\nZASADY GRY: \n";
+    cout << "\n1.Wszystkie pionki poruszaja sie na skos do przodu po polach bialych (wypelnionych znakiem *). ";
+    cout << "\n2.Gre zaczyna gracz posiadajacy biale pionki.";
+    cout << "\n3.Gra konczy sie, kiedy jeden z graczy straci wszystkie piony lub nie ma legalnego ruchu w swojej turze. ";
+    cout << "\n4.Bicie nastepuje takze po skosie. Nie ma bicia wielokrotnego - damy rowniez nie moga bic podwojnie, potrojnie itd. ";
+    cout << "\n5.Pion, ktory dojdzie na ostatnia linie (w wypadku pionow bialych na linie 10, a w wypadku czarnych - na 1) staje sie dama. Damy moga poruszac sie tak jak zwykle piony oraz o jedno pole na skos do tylu ";
+    cout << "\n6.Jezeli gracz ma dostepne bicie, wyswietli mu sie wiadomosc. Bicie jest obowiazkowe. ";
+    cout << "\n\nUWAGA: W sytuacji remisowej np. gdy kazdy z graczy ma po 1 dame gracze powinni zakonczyc gre remisem, jednak nie zostalo to uwzglednione w kodzie";
+    cout << "\n\nAby przejsc do gry nacisnij dowolny klawisz";
+    cin.get();
+}
 void pokaz_plansze(char t[10][10])
 {
   cout << "       A     B      C      D      E      F      G      H      I      J \n";
@@ -214,8 +251,9 @@ void pokaz_plansze(char t[10][10])
 
 int main()
 {
-    int ile_bialych = 40;
-    int ile_czarnych = 40;
+    zasady();
+    int ile_bialych = 20;
+    int ile_czarnych = 20;
     char piony[10][10];
     //0 - puste pole
     //c - czarny pion
@@ -243,19 +281,40 @@ int main()
     {
         if(ile_bialych == 0)
         {
-            czysc(kogo);
+            system("cls");
+            cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
+            cout << "|| << WITAJ W GRZE WARCABY >> ||||    << KONIEC GRY >>    ||\n";
+            cout << "|| [ Autor: Mateusz Antczak ] ||||                        ||\n";
+            cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
             pokaz_plansze(piony);
             cout << "\nCZARNI WYGRYWAJA!\n";
             break;
         }
         if(ile_czarnych == 0)
         {
-            czysc(kogo);
+            system("cls");
+            cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
+            cout << "|| << WITAJ W GRZE WARCABY >> ||||    << KONIEC GRY >>    ||\n";
+            cout << "|| [ Autor: Mateusz Antczak ] ||||                        ||\n";
+            cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
             pokaz_plansze(piony);
             cout << "\nBIALI WYGRYWAJA!\n";
             break;
         }
-
+        if(!czy_ruch_mozliwy(piony, kogo))
+        {
+            system("cls");
+            cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
+            cout << "|| << WITAJ W GRZE WARCABY >> ||||    << KONIEC GRY >>    ||\n";
+            cout << "|| [ Autor: Mateusz Antczak ] ||||                        ||\n";
+            cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n";
+            pokaz_plansze(piony);
+            if(kogo == "bialych")
+                cout << "\nBIALI NIE MAJA RUCHU. CZARNI WYGRYWAJA!\n";
+            else
+                cout << "\nCZARNI NIE MAJA RUCHU. BIALI WYGRYWAJA!\n";
+            break;
+        }
     bool bicie_dostepne = czy_bicie(piony, kogo);
 
         czysc(kogo);
